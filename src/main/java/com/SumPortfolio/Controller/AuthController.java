@@ -31,7 +31,7 @@ public class AuthController {
     private CustomUserDetailsImpl customUserDetails;
 
     @PostMapping("/signUp")
-    public ResponseEntity<AuthResponse>createUserHandler(@RequestBody User user) throws Exception{
+    public ResponseEntity<User>createUserHandler(@RequestBody User user) throws Exception{
 
         User isUserExist = userRepo.findByEmail(user.getEmail());
         if(isUserExist!=null){
@@ -52,7 +52,7 @@ public class AuthController {
         AuthResponse authResponse = new AuthResponse();
         authResponse.setMessage("signUp success");
         authResponse.setJwt(jwt);
-        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
     @PostMapping("/signIn")
@@ -60,7 +60,7 @@ public class AuthController {
         String username = loginRequest.getEmail();
         String password  = loginRequest.getPassword();
 
-        Authentication authentication = authenticate(username, password);
+        Authentication authentication = authentication(username, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = JWTProvider.generateToken(authentication);
@@ -68,18 +68,17 @@ public class AuthController {
         AuthResponse authResponse = new AuthResponse();
         authResponse.setJwt(jwt);
         authResponse.setMessage("singIn success");
-        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
+        return new ResponseEntity<AuthResponse>(authResponse, HttpStatus.CREATED);
     }
 
-    private Authentication authenticate(String username, String password) {
+    private Authentication authentication(String username, String password) {
         UserDetails userDetails = customUserDetails.loadUserByUsername(username);
         if(userDetails==null){
-            throw new BadCredentialsException("Invalid user email: "+username);
+            throw new BadCredentialsException("Invalid Username : " + username);
         }
         if(!passwordEncoder.matches(password, userDetails.getPassword())){
-            throw new BadCredentialsException("Invalid password");
+            throw new BadCredentialsException("Invalid Password");
         }
-
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
