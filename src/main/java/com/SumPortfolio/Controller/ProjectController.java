@@ -1,9 +1,12 @@
 package com.SumPortfolio.Controller;
 
 import com.SumPortfolio.Model.Chat;
+import com.SumPortfolio.Model.Invitation;
 import com.SumPortfolio.Model.Project;
 import com.SumPortfolio.Model.User;
+import com.SumPortfolio.Request.InviteRequest;
 import com.SumPortfolio.Response.MessageResponse;
+import com.SumPortfolio.Service.IInvitationService;
 import com.SumPortfolio.Service.IProjectService;
 import com.SumPortfolio.Service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,8 @@ public class ProjectController {
     private IProjectService projectService;
     @Autowired
     private IUserService userService;
-
+    @Autowired
+    private IInvitationService invitationService;
     @GetMapping
     public ResponseEntity<List<Project>> getProjects(
             @RequestParam(required = false) String category,
@@ -94,5 +98,31 @@ public class ProjectController {
         User user = userService.findUserByJwt(jwt);
         Chat chats = projectService.getChatByProjectId(projectId);
         return new ResponseEntity<>(chats, HttpStatus.OK);
+    }
+
+    @PostMapping("/invite")
+    public ResponseEntity<MessageResponse> inviteProject(
+            @RequestHeader("Authorization") String jwt,
+            @RequestBody InviteRequest request,
+            @RequestBody Project project
+    ) throws Exception{
+        User user = userService.findUserByJwt(jwt);
+        Project createdProject = projectService.createProject(project, user);
+        invitationService.sendInvitation(request.getEmail(), request.getProjectId());
+        MessageResponse messageResponse = new MessageResponse("User Invitation Send");
+        return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/accept_invitation")
+    public ResponseEntity<Invitation> acceptInvitationProject(
+            @RequestHeader("Authorization") String jwt,
+            @RequestParam String token,
+            @RequestBody Project project
+    ) throws Exception{
+        User user = userService.findUserByJwt(jwt);
+        Project createdProject = projectService.createProject(project, user);
+        Invitation invitation = invitationService.acceptInvitation(token, user.getId());
+        projectService.addUserToProject(invitation.getProjectId(), user.getId());
+        return new ResponseEntity<>(invitation, HttpStatus.OK);
     }
 }
