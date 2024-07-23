@@ -6,6 +6,7 @@ import com.SumPortfolio.Request.LoginRequest;
 import com.SumPortfolio.Response.AuthResponse;
 import com.SumPortfolio.SecurityConfig.JWTProvider;
 import com.SumPortfolio.Service.CustomUserDetailsImpl;
+import com.SumPortfolio.Service.ISubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,8 @@ public class AuthController {
 
     @Autowired
     private CustomUserDetailsImpl customUserDetails;
+    @Autowired
+    private ISubscriptionService subscriptionService;
 
     @PostMapping("/signUp")
     public ResponseEntity<User>createUserHandler(@RequestBody User user) throws Exception{
@@ -43,6 +46,7 @@ public class AuthController {
         createdUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User savedUser = userRepo.save(createdUser);
+        subscriptionService.createSubscription(savedUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
