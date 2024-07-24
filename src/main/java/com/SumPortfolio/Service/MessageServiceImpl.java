@@ -28,7 +28,7 @@ public class MessageServiceImpl implements IMessageService{
         Message message = new Message();
         message.setContent(content);
         message.setSender(sender);
-        message.setCreatedDateTime(LocalDateTime.now());
+        message.setCreatedTime(LocalDateTime.now());
         message.setChat(chat);
 
         Message savedMessage = messageRepository.save(message);
@@ -40,6 +40,6 @@ public class MessageServiceImpl implements IMessageService{
     @Override
     public List<Message> getMessagesByProjectId(Long projectId) throws Exception {
         Chat chat = projectService.getChatByProjectId(projectId);
-        return messageRepository.findChatOrderByCreationTimeAsc(chat.getId());
+        return messageRepository.findByChatIdOrderByCreatedTimeAsc(chat.getId());
     }
 }

@@ -18,7 +18,7 @@ public class Message {
     private Long id;
 
     private String content;
-    private LocalDateTime createdDateTime;
+    private LocalDateTime createdTime;
 
     @ManyToOne
     private Chat chat;
