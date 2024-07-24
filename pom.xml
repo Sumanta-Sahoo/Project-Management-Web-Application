@@ -95,6 +95,10 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 			<version>3.3.2</version>
 		</dependency>
+
+
+
+
 	</dependencies>
 
 	<build>
