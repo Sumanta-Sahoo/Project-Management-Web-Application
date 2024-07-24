@@ -80,7 +80,7 @@ public class ProjectController {
         return new ResponseEntity<>(messageResponse, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<List<Project>> searchProjects(
             @RequestParam(required = false) String keyword,
             @RequestHeader("Authorization") String jwt
@@ -90,7 +90,7 @@ public class ProjectController {
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 
-    @GetMapping("/{projectId/chat}")
+    @GetMapping("/{projectId}/chat")
     public ResponseEntity<Chat> getChatByProjectId(
             @PathVariable Long projectId,
             @RequestHeader("Authorization") String jwt
