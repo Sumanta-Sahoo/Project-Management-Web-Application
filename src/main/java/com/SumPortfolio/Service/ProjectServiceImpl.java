@@ -25,7 +25,7 @@ public class ProjectServiceImpl implements IProjectService{
         Project createProject = new Project();
         createProject.setOwner(user);
         createProject.setTags(project.getTags());
-        createProject.setProjectName(project.getProjectName());
+        createProject.setName(project.getName());
         createProject.setProjectCategory(project.getProjectCategory());
         createProject.setProjectDescription(project.getProjectDescription());
         createProject.getTeam().add(user);
@@ -73,7 +73,7 @@ public class ProjectServiceImpl implements IProjectService{
     public Project updateProject(Project updatedProject, Long id) throws Exception {
         Project project = getProjectById(id);
 
-        project.setProjectName(updatedProject.getProjectName());
+        project.setName(updatedProject.getName());
         project.setProjectDescription(updatedProject.getProjectDescription());
         project.setProjectCategory(updatedProject.getProjectCategory());
         project.setTags(updatedProject.getTags());
@@ -112,6 +112,6 @@ public class ProjectServiceImpl implements IProjectService{
     @Override
     public List<Project> searchProject(String keyword, User user) throws Exception {
 
-        return projectRepo.findNameContainingAndTeamContains(keyword, user);
+        return projectRepo.findByNameContainingAndTeamContains(keyword, user);
     }
 }
